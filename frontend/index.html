@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paint Animation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Paint Animation</h1>
+            <p>Transform your images into beautiful animated paintings</p>
+        </div>
+        
+        <div class="stats" id="statsContainer">
+            <h3>📊 Usage Statistics</h3>
+            <p>Loading statistics...</p>
+        </div>
+        
+        <div class="upload-section">
+            <h2>Upload Your Image</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Click to upload or drag and drop</div>
+                <div class="upload-subtext">Supports PNG, JPG, JPEG, GIF, BMP, TIFF (Max 16MB)</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*">
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="progressText">Processing your image...</div>
+            </div>
+        </div>
+        
+        <div class="result-section" id="resultSection">
+            <h2>Your Animated Video</h2>
+            <div id="resultContent"></div>
+        </div>
+        
+        <div class="footer">
+            <p>Created with ❤️ by Ahmed Medani using advanced computer vision and animation techniques</p>
+            <div class="social-links">
+                <a href="https://github.com/AhmedMedani01" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <span class="social-icon">🐙</span> GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/ahmed-medani91/" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <span class="social-icon">💼</span> LinkedIn
+                </a>
+                <a href="https://www.upwork.com/freelancers/~01b08566d5c43ab2e3" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <span class="social-icon">🚀</span> Upwork
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
