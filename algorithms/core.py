@@ -911,27 +911,48 @@ def paint_image(img_path, video_path):
         True if successful, False otherwise
     """
     try:
+        print(f"🖼️ Loading and resizing image: {img_path}")
         image, _ = load_and_resize_image(img_path)
         h, w = image.shape[:2]
+        print(f"📐 Image dimensions: {w}x{h}")
         
         # Create default sprites if hands folder doesn't exist
-        pen_png = prepare_sprite('hands/pen1.png', base_shape=(h, w), scale_frac=1.5)
-        brush_png = prepare_sprite('hands/brush1.png', base_shape=(h, w), scale_frac=1.5)
+        print("🎨 Preparing sprite images...")
+        try:
+            pen_png = prepare_sprite('hands/pen1.png', base_shape=(h, w), scale_frac=1.5)
+            brush_png = prepare_sprite('hands/brush1.png', base_shape=(h, w), scale_frac=1.5)
+            print("✅ Sprites prepared successfully")
+        except Exception as sprite_error:
+            print(f"⚠️ Sprite preparation warning: {sprite_error}")
+            # Continue with default sprites
+            pen_png = None
+            brush_png = None
         
+        print("🔍 Creating binary mask...")
         _, hull_img = create_binary_mask(
             image,
             dilate_iters=1,
             kernel_size=3,
             min_size=1500
         )
+        print("✅ Binary mask created")
         
+        print("🎯 Processing image objects...")
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         img_objs = make_img_objs(gray, closing_size=5)
+        print("✅ Image objects processed")
         
+        print("🎨 Creating mask RGB...")
         mask_rgb = create_mask_rgb(image, img_objs)
-        video_writer = setup_video_writer(video_path, w, h)
+        print("✅ Mask RGB created")
         
-        print("Animating binary mask")
+        print("🎬 Setting up video writer...")
+        video_writer = setup_video_writer(video_path, w, h)
+        if video_writer is None:
+            raise Exception("Failed to initialize video writer - FFmpeg may not be available")
+        print("✅ Video writer initialized")
+        
+        print("🎭 Animating binary mask...")
         I_edge = animate_binary_mask(
             mask_rgb=mask_rgb,
             edge_map=img_objs,
@@ -941,8 +962,9 @@ def paint_image(img_path, video_path):
             skip=100,
             reverse=False,
         )
+        print("✅ Binary mask animation completed")
         
-        print('Animating colors')
+        print("🌈 Animating colors...")
         I_rgb = animate_colors_kmeans_random_paths(
             image=image,
             base_canvas=mask_rgb,
@@ -953,9 +975,35 @@ def paint_image(img_path, video_path):
             jitter=0.3, 
             rng_seed=42,
         )
+        print("✅ Color animation completed")
         
+        print("💾 Finalizing video...")
         video_writer.close()
-        return True
+        
+        # Verify output file was created
+        if os.path.exists(video_path):
+            file_size = os.path.getsize(video_path)
+            print(f"✅ Video saved successfully: {video_path} ({file_size} bytes)")
+            return True
+        else:
+            print(f"❌ Video file not created: {video_path}")
+            return False
+            
+    except FileNotFoundError as e:
+        print(f"❌ File not found error: {e}")
+        raise
+    except PermissionError as e:
+        print(f"❌ Permission error: {e}")
+        raise
+    except MemoryError as e:
+        print(f"❌ Memory error: {e}")
+        raise
+    except ImportError as e:
+        print(f"❌ Import error: {e}")
+        raise
     except Exception as e:
-        print(f"Error in paint_image: {e}")
-        return False
+        print(f"❌ Unexpected error in paint_image: {e}")
+        print(f"❌ Error type: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
+        raise

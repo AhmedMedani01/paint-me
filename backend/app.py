@@ -102,6 +102,10 @@ def upload_file():
             
             # Process the image
             start_time = time.time()
+            print(f"🚀 Starting video generation for {filename}")
+            print(f"📁 Input path: {input_path}")
+            print(f"📁 Output path: {output_path}")
+            
             success = paint_image(input_path, output_path)
             processing_time = time.time() - start_time
             
@@ -110,6 +114,7 @@ def upload_file():
             record_usage(user_ip, filename, processing_time, success)
             
             if success and os.path.exists(output_path):
+                print(f"✅ Video generation successful: {output_filename}")
                 # Clean up input file
                 os.remove(input_path)
                 return jsonify({
@@ -118,15 +123,67 @@ def upload_file():
                     'processing_time': round(processing_time, 2)
                 })
             else:
+                print(f"❌ Video generation failed for {filename}")
+                print(f"📁 Output file exists: {os.path.exists(output_path)}")
                 # Clean up files on failure
                 if os.path.exists(input_path):
                     os.remove(input_path)
                 if os.path.exists(output_path):
                     os.remove(output_path)
-                return jsonify({'error': 'Failed to process image'}), 500
+                return jsonify({
+                    'error': 'Video generation failed',
+                    'error_type': 'PROCESSING_FAILED',
+                    'status_code': 500,
+                    'details': 'The image processing algorithm failed to generate a video. This could be due to image format issues, insufficient memory, or missing dependencies.'
+                }), 500
                 
+        except FileNotFoundError as e:
+            print(f"❌ File not found error: {str(e)}")
+            return jsonify({
+                'error': 'File not found',
+                'error_type': 'FILE_NOT_FOUND',
+                'status_code': 404,
+                'details': f'Required file not found: {str(e)}'
+            }), 404
+            
+        except PermissionError as e:
+            print(f"❌ Permission error: {str(e)}")
+            return jsonify({
+                'error': 'Permission denied',
+                'error_type': 'PERMISSION_ERROR',
+                'status_code': 403,
+                'details': f'Permission denied: {str(e)}'
+            }), 403
+            
+        except MemoryError as e:
+            print(f"❌ Memory error: {str(e)}")
+            return jsonify({
+                'error': 'Insufficient memory',
+                'error_type': 'MEMORY_ERROR',
+                'status_code': 507,
+                'details': 'The image is too large or complex for processing. Try using a smaller image.'
+            }), 507
+            
+        except ImportError as e:
+            print(f"❌ Import error: {str(e)}")
+            return jsonify({
+                'error': 'Missing dependency',
+                'error_type': 'IMPORT_ERROR',
+                'status_code': 500,
+                'details': f'Required library not available: {str(e)}'
+            }), 500
+            
         except Exception as e:
-            return jsonify({'error': f'Processing error: {str(e)}'}), 500
+            print(f"❌ Unexpected error: {str(e)}")
+            print(f"❌ Error type: {type(e).__name__}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({
+                'error': 'Unexpected error occurred',
+                'error_type': 'UNEXPECTED_ERROR',
+                'status_code': 500,
+                'details': f'{type(e).__name__}: {str(e)}'
+            }), 500
     
     return jsonify({'error': 'Invalid file type'}), 400
 
