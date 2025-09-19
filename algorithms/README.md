@@ -509,3 +509,5 @@ def paint_image(img_path, video_path):
 
 **Algorithms maintained by Ahmed Medani**  
 *Part of the Paint Animation Web Application*
+
+
