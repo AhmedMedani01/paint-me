@@ -20,9 +20,7 @@ Transform your images into beautiful animated paintings using advanced computer 
 
 ## 🚀 Live Demo
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app)
-[![Deploy on Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com)
-[![Deploy on Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
+[![Railway Deployment](https://railway.app/button.svg)](https://paint-me-production.up.railway.app/)
 
 ## 🏗️ Architecture
 
